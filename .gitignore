@@ -1,4 +1,5 @@
 .idea
 target/
 apkpackage.iml
+classes/
 com.razor.www.iml

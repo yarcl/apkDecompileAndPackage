@@ -1,4 +1,3 @@
-
 package com;
 /*
 import java.io.IOException;
@@ -29,13 +28,15 @@ public class TestApk {
 
     public static String insertStr1 = "";
 
-    public static String firstReg = "";
+    public static String startReg = "";
 
-    public static String secondReg = "";
+    public static String returnReg = "";
 
     public static String copyPath = "";
 
     public static String endName = "";
+
+    public static String endReg = "";
 
     static {
         InputStream is = TestApk.class.getClassLoader().getResourceAsStream("cmd.properties");
@@ -49,10 +50,11 @@ public class TestApk {
             packageSdk = properties.getProperty("packageSdk");
             cmdName = properties.getProperty("cmdName");
             insertStr1 = properties.getProperty("insertStr");
-            firstReg = properties.getProperty("firstReg");
-            secondReg = properties.getProperty("secondReg");
+            startReg = properties.getProperty("startReg");
+            returnReg = properties.getProperty("returnReg");
             copyPath = properties.getProperty("copyPath");
             endName = properties.getProperty("endName");
+            endReg = properties.getProperty("endReg");
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -73,6 +75,9 @@ public class TestApk {
         // TestApk.deCompile(apkPath, disPackageCmd);
 
         // 反编译apk到当前目录
+
+
+
         Runtime run = Runtime.getRuntime();
         try {
             Process process = run.exec("cmd.exe /c cd "+ apkPath + " && " + disPackageCmd + " && exit && exit");
@@ -92,8 +97,16 @@ public class TestApk {
         // 将文件copy到指定的目录
         TestApk.copyDirectory(apkPath+packageSdk, targetPath);
 
+
+
+
+
         // 将指定目录文件插入指定的内容 lib.myfile.test
         TestApk.insertStrToFile(apkPath+apkName.substring(0,apkName.lastIndexOf("."))+"\\"+cmdName, insertStr1);
+
+
+
+
 
 
         // 编译apk
@@ -115,7 +128,7 @@ public class TestApk {
     }
 
     // copy文件
-    private static void copyFile(File sourceFile,File targetFile){
+    public static void copyFile(File sourceFile,File targetFile){
          if(!sourceFile.canRead()){
              System.out.println("源文件" + sourceFile.getAbsolutePath() + "不可读，无法复制！");
                  return;
@@ -162,7 +175,7 @@ public class TestApk {
     }
 
     // 拷贝目录到指定目录
-    private static void copyDirectory(String sourcePathString, String targetPathString){
+    public static void copyDirectory(String sourcePathString, String targetPathString){
         if(!new File(sourcePathString).canRead()){
              System.out.println("源文件夹" + sourcePathString + "不可读，无法复制！");
              return;
@@ -182,7 +195,7 @@ public class TestApk {
     }
 
     //
-    private static void insertStrToFile(String cmdName, String insertStr) throws IOException {
+    public static void insertStrToFile(String cmdName, String insertStr) throws IOException {
         System.out.println("文件插入开始==============");
         String str1 = cmdName.replace('.', '/');
         File file = new File(str1+endName);
@@ -191,21 +204,40 @@ public class TestApk {
         String resultStr = null;
         try{
             BufferedReader br = new BufferedReader(new FileReader(file));//构造一个BufferedReader类来读取文件
-            Pattern pattern = Pattern.compile(secondReg);
-            Pattern pattern1 = Pattern.compile(firstReg);
-            boolean flag1= false;
+            Pattern returnPattern = Pattern.compile(returnReg);
+            Pattern startPattern = Pattern.compile(startReg);
+            Pattern endPattern = Pattern.compile(endReg);
+            boolean flag1 = false;
+            boolean flag2 = false;
             String s = null;
+            String bufferStr = "";
+            int i = 0;
+            // 临界最后一行问题
             while((s = br.readLine())!=null){//使用readLine方法，一次读一行
-                Matcher mm = pattern.matcher(s);
-                Matcher mm1 = pattern1.matcher(s);
-                if(mm1.find()){
+                i++;
+                Matcher returnM = returnPattern.matcher(bufferStr);
+                Matcher startM = startPattern.matcher(s);
+                Matcher endM = endPattern.matcher(s);
+
+                if(startM.find()){
                     flag1 = true;
                 }
-                if(flag1&&mm.find()){
+                if(flag1&&flag2&&endM.find()&&returnM.find()){
                     flag1 = false;
                     result.append(System.lineSeparator()+insertStr);
+                    result.append(System.lineSeparator()+bufferStr);
+                    result.append(System.lineSeparator()+s);
+                } else if(flag1&&returnPattern.matcher(s).find()){
+                    flag2 = true;
+                } else {
+                    flag2 = false;
+                    if(i==1) {
+                        result.append(s);
+                    } else {
+                        result.append(System.lineSeparator() + s);
+                    }
                 }
-                result.append(System.lineSeparator()+s);
+                bufferStr = s;
             }
             br.close();
             resultStr = result.toString();
@@ -215,13 +247,14 @@ public class TestApk {
 
             TestApk.reNameFile(file1, file);
         }catch(Exception e){
+            e.printStackTrace();
             System.out.println("文件插入失败==============");
         }
         System.out.println("文件插入结束==============");
     }
 
     // 插入字符串到文件指定位置
-    private static File insertStrFile(String str1, String resultStr){
+    public static File insertStrFile(String str1, String resultStr){
         File file1 = new File(str1+"1"+endName);
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(file1));
@@ -253,7 +286,7 @@ public class TestApk {
     }
 
     // 修改文件名称
-    private static void reNameFile(File sourceFile, File targetFile){
+    public static void reNameFile(File sourceFile, File targetFile){
         System.out.println("文件重命名开始"+sourceFile.getName());
         if(sourceFile.exists())
         {
@@ -262,7 +295,7 @@ public class TestApk {
         System.out.println("文件重命名结束"+targetFile.getName());
     }
 
-    private static void outputCmdResult(BufferedReader bufferedReader, Process process){
+    public static void outputCmdResult(BufferedReader bufferedReader, Process process){
         try {
             String line1 = null;
             while ((line1 = bufferedReader.readLine()) != null) {
