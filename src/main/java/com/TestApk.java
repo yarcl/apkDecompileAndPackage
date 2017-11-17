@@ -130,10 +130,10 @@ public class TestApk {
     // copy文件
     public static void copyFile(File sourceFile,File targetFile){
          if(!sourceFile.canRead()){
-             System.out.println("源文件" + sourceFile.getAbsolutePath() + "不可读，无法复制！");
+             System.out.println("SourceFile:" + sourceFile.getAbsolutePath() + "is not able to read, copy failure!");
                  return;
          }else{
-            System.out.println("开始复制文件" + sourceFile.getAbsolutePath() + "到" + targetFile.getAbsolutePath());
+             System.out.println("Start copy file:" + sourceFile.getAbsolutePath() + " to " + targetFile.getAbsolutePath());
              FileInputStream fis = null;
              BufferedInputStream bis = null;
              FileOutputStream fos = null;
@@ -166,7 +166,7 @@ public class TestApk {
                      if(bos != null){
                              bos.close();
                          }
-                     System.out.println("文件" + sourceFile.getAbsolutePath() + "复制到" + targetFile.getAbsolutePath() + "完成");
+                     System.out.println("Copy file:" + sourceFile.getAbsolutePath() + " to " + targetFile.getAbsolutePath() + " complement!");
                  }catch(IOException e){
                      e.printStackTrace();
                  }
@@ -177,11 +177,11 @@ public class TestApk {
     // 拷贝目录到指定目录
     public static void copyDirectory(String sourcePathString, String targetPathString){
         if(!new File(sourcePathString).canRead()){
-             System.out.println("源文件夹" + sourcePathString + "不可读，无法复制！");
+             System.out.println("Source directory:" + sourcePathString + "is not able to read, copy failure!");
              return;
         }else{
              (new File(targetPathString)).mkdirs();
-             System.out.println("开始复制文件夹" + sourcePathString + "到" + targetPathString);
+             System.out.println("Start copy directory file:" + sourcePathString + " to " + targetPathString+"!");
              File[] files = new File(sourcePathString).listFiles();
              for(int i = 0; i < files.length; i++){
                  if(files[i].isFile()){
@@ -190,13 +190,13 @@ public class TestApk {
                      copyDirectory(sourcePathString + File.separator + files[i].getName(),targetPathString + File.separator + files[i].getName());
                  }
              }
-             System.out.println("复制文件夹" + sourcePathString + "到" + targetPathString + "结束");
+             System.out.println("Copy directory:" + sourcePathString + " to " + targetPathString + " end!");
          }
     }
 
     //
     public static void insertStrToFile(String cmdName, String insertStr) throws IOException {
-        System.out.println("文件插入开始==============");
+        System.out.println("File insert start==============");
         String str1 = cmdName.replace('.', '/');
         File file = new File(str1+endName);
 
@@ -248,9 +248,9 @@ public class TestApk {
             TestApk.reNameFile(file1, file);
         }catch(Exception e){
             e.printStackTrace();
-            System.out.println("文件插入失败==============");
+            System.out.println("File insert failure==============");
         }
-        System.out.println("文件插入结束==============");
+        System.out.println("File insert end==============");
     }
 
     // 插入字符串到文件指定位置
@@ -269,17 +269,17 @@ public class TestApk {
 
     // 删除文件
     public static boolean deleteFile(File file) {
-        System.out.println("开始删除文件"+file.getName());
+        System.out.println("Start delete file:"+file.getName());
         if (file.exists() && file.isFile()) {
             if (file.delete()) {
-                System.out.println("文件删除成功");
+                System.out.println("Success to delete file");
                 return true;
             } else {
-                System.out.println("文件删除失败");
+                System.out.println("Delete file failure");
                 return false;
             }
         } else {
-            System.out.println("文件删除失败");
+            System.out.println("Delete file failure");
             return false;
         }
 
@@ -287,12 +287,12 @@ public class TestApk {
 
     // 修改文件名称
     public static void reNameFile(File sourceFile, File targetFile){
-        System.out.println("文件重命名开始"+sourceFile.getName());
+        System.out.println("File rename start:"+sourceFile.getName());
         if(sourceFile.exists())
         {
             sourceFile.renameTo(new File(targetFile.getAbsolutePath()));
         }
-        System.out.println("文件重命名结束"+targetFile.getName());
+        System.out.println("File rename over:"+targetFile.getName());
     }
 
     public static void outputCmdResult(BufferedReader bufferedReader, Process process){
